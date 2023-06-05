@@ -20,14 +20,16 @@ import { ThrottlerModule } from '@nestjs/throttler';
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        redis: {
-          host: configService.getOrThrow('REDIS_HOST'),
-          port: configService.getOrThrow('REDIS_PORT'),
-          password: configService.get('REDIS_PASSWORD'),
-        },
-        prefix: 'remotion',
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisURL = configService.get<string>('REDIS_URL');
+        return {
+          redis: redisURL || {
+            host: configService.getOrThrow('REDIS_HOST'),
+            port: configService.getOrThrow('REDIS_PORT'),
+          },
+          prefix: 'remotion',
+        };
+      },
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
