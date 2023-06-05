@@ -17,6 +17,7 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": false,
     "jsx": "react-jsx",
     "strict": true,
     "lib": ["es2015"],
@@ -26,5 +27,6 @@
       "~/*": ["./src/*"],
       "#video/*": ["./video/*"]
     }
-  }
+  },
+  "include": ["src", "video"]
 }
