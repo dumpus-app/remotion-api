@@ -37,3 +37,4 @@ lerna-debug.log*
 # Remotion
 out
 uploads
+docker-data
