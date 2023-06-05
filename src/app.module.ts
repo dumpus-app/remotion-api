@@ -16,6 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           host: configService.getOrThrow('REDIS_HOST'),
           port: configService.getOrThrow('REDIS_PORT'),
         },
+        prefix: 'remotion',
       }),
       inject: [ConfigService],
     }),

@@ -1,11 +1,9 @@
 import { Processor, Process, OnQueueCompleted } from '@nestjs/bull';
 import { Job } from 'bull';
 import { CreateVideoDto } from './dto/create-video.dto';
-import { bundle } from '@remotion/bundler';
 import { getCompositions, renderMedia } from '@remotion/renderer';
-import { webpackOverride } from '../../video/webpack-override';
-import path from 'node:path';
 import { getFilePath } from './utils';
+import { bundleLocation } from '../main';
 
 export type JobParams = CreateVideoDto & { id: string };
 
@@ -20,17 +18,6 @@ export class VideosConsumer {
     const { id, ...inputProps } = job.data;
     // The composition you want to render
     const compositionId = 'Video';
-    // You only have to do this once, you can reuse the bundle.
-    const entry = './video/index.ts';
-    console.log('Creating a Webpack bundle of the video');
-    const bundleLocation = await bundle(
-      path.join(process.cwd(), entry),
-      () => undefined,
-      {
-        // If you have a Webpack override, make sure to add it here
-        webpackOverride,
-      },
-    );
     // Extract all the compositions you have defined in your project
     // from the webpack bundle.
     const comps = await getCompositions(bundleLocation, {
@@ -43,8 +30,7 @@ export class VideosConsumer {
     const composition = comps.find((c) => c.id === compositionId);
     // Ensure the composition exists
     if (!composition) {
-      throw new Error(`No composition with the ID ${compositionId} found.
-  Review "${entry}" for the correct ID.`);
+      throw new Error(`No composition with the ID ${compositionId} found.`);
     }
 
     const outputLocation = getFilePath(id);
