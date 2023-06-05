@@ -11,7 +11,7 @@
     "server:start": "nest start",
     "server:start:dev": "nest start --watch",
     "server:start:debug": "nest start --debug --watch",
-    "server:start:prod": "node dist/main",
+    "server:start:prod": "node dist/src/main",
     "lint": "eslint \"{src,video,apps,libs,test}/**/*.{ts,tsx}\" --fix",
     "server:test": "jest",
     "server:test:watch": "jest --watch",
