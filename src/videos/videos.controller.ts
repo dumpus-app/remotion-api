@@ -6,6 +6,7 @@ import {
   Param,
   HttpException,
   Res,
+  Sse,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
@@ -36,5 +37,10 @@ export class VideosController {
       'Content-Disposition': 'attachment; filename="video.mp4"',
     });
     return file;
+  }
+
+  @Sse('sse/:id')
+  sse(@Param('id') id: string) {
+    return this.videosService.sse(id);
   }
 }

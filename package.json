@@ -21,10 +21,13 @@
     "remotion:start": "remotion preview video/index.ts",
     "remotion:build": "remotion render video/index.ts Video out/video.mp4",
     "remotion:upgrade": "remotion upgrade",
-    "remotion:test": "eslint video --ext ts,tsx,js,jsx && tsc video/index.ts"
+    "remotion:test": "eslint video --ext ts,tsx,js,jsx && tsc video/index.ts",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env up"
   },
   "dependencies": {
+    "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^2.3.2",
     "@nestjs/core": "^9.0.0",
     "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/platform-express": "^9.0.0",
@@ -33,6 +36,7 @@
     "@remotion/google-fonts": "^3.3.98",
     "@remotion/renderer": "^3.3.98",
     "@remotion/tailwind": "^3.3.98",
+    "bull": "^4.10.4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "clsx": "^1.2.1",

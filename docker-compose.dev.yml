@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  redis:
+    container_name: remotion-api-redis
+    image: redis:7.0.5-alpine
+    volumes:
+      - ./docker-data/redis:/data
+    ports:
+      - '${REDIS_PORT}:6379'
