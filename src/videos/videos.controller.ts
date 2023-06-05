@@ -11,6 +11,7 @@ import {
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
 import type { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('videos')
 export class VideosController {
@@ -39,6 +40,9 @@ export class VideosController {
     return file;
   }
 
+  // 5 minutes TTL
+  // Limit set to 5
+  @Throttle(5, 5 * 60)
   @Sse('sse/:id')
   sse(@Param('id') id: string) {
     return this.videosService.sse(id);

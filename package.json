@@ -32,6 +32,7 @@
     "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^2.2.2",
+    "@nestjs/throttler": "^4.0.0",
     "@remotion/bundler": "^3.3.98",
     "@remotion/cli": "^3.3.98",
     "@remotion/google-fonts": "^3.3.98",
