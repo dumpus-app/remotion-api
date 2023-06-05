@@ -4,11 +4,11 @@ import { AppService } from './app.service';
 import { VideosModule } from './videos/videos.module';
 import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    VideosModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -20,6 +20,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
+    VideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

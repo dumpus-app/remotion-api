@@ -4,6 +4,9 @@ import { CreateVideoDto } from './dto/create-video.dto';
 import { getCompositions, renderMedia } from '@remotion/renderer';
 import { getFilePath } from './utils';
 import { bundleLocation } from '../main';
+import { Injectable } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import fsp from 'node:fs/promises';
 
 export type JobParams = CreateVideoDto & { id: string };
 
@@ -12,7 +15,12 @@ export function jobParams(params: JobParams) {
 }
 
 @Processor('videos')
+@Injectable()
 export class VideosConsumer {
+  constructor(private schedulerRegistry: SchedulerRegistry) {}
+
+  private duration = 60 * 1000 * 15; // 15min
+
   @Process()
   async transcode(job: Job<JobParams>) {
     const { id, ...inputProps } = job.data;
@@ -51,6 +59,13 @@ export class VideosConsumer {
     job: Job<JobParams>,
     result: Awaited<ReturnType<typeof this.transcode>>,
   ) {
-    // TODO: schedule deletion
+    const { id } = job.data;
+    this.schedulerRegistry.addTimeout(
+      `delete-video-${id}`,
+      setTimeout(async () => {
+        await fsp.unlink(getFilePath(id));
+        console.log(`deleted video with id ${id}`);
+      }, this.duration),
+    );
   }
 }
