@@ -20,7 +20,7 @@ COPY . .
 RUN pnpm server:build
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3050
 
 # Start the server
 CMD ["pnpm", "server:start:prod"]
