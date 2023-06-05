@@ -7,6 +7,14 @@ import { InjectQueue } from '@nestjs/bull';
 import { fileExists, getFilePath } from './utils';
 import { JobParams, jobParams } from './videos-consumer.service';
 import { Observable, map } from 'rxjs';
+import EventEmitter from 'node:events';
+
+class MyEmitter extends EventEmitter {
+  emit(type: string, ...args: any[]) {
+    super.emit('*', ...[type, ...args]);
+    return super.emit(type, ...args) || super.emit('', ...args);
+  }
+}
 
 @Injectable()
 export class VideosService {
@@ -30,29 +38,23 @@ export class VideosService {
   }
 
   async sse(id: string) {
-    // TODO: make this work
-    // 1. Test with manual values and sleeps
-    // 2. Test event listeners with console logs
-    // 3. Implement actual solution
-    const obs$: Observable<'active' | 'progress' | 'completed'> =
-      new Observable((observer) => {
-        this.videosQueue.on('active', (job: Job<JobParams>) => {
-          if (job.data.id === id) {
-            observer.next('active');
-          }
-        });
-        this.videosQueue.on('progress', (job: Job<JobParams>) => {
-          if (job.data.id === id) {
-            observer.next('progress');
-          }
-        });
-        this.videosQueue.on('completed', (job: Job<JobParams>) => {
-          if (job.data.id === id) {
-            observer.next('completed');
-            this.videosQueue.removeAllListeners();
-          }
-        });
+    const obs$ = new Observable<string>((observer) => {
+      this.videosQueue.emit = MyEmitter.prototype.emit;
+      this.videosQueue.on('*', (type: string, job: Job<JobParams>) => {
+        if (job.data.id === id) {
+          observer.next(type);
+        }
+        if (type === 'completed') {
+          this.videosQueue.removeAllListeners();
+        }
       });
-    return obs$.pipe(map((observer) => ({ status: observer })));
+    });
+    return obs$.pipe(
+      map((observer) => ({
+        data: {
+          status: observer,
+        },
+      })),
+    );
   }
 }

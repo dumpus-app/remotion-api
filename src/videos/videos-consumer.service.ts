@@ -51,7 +51,6 @@ export class VideosConsumer {
     job: Job<JobParams>,
     result: Awaited<ReturnType<typeof this.transcode>>,
   ) {
-    // TODO: sse
     // TODO: schedule deletion
   }
 }
