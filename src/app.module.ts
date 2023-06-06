@@ -22,11 +22,11 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const redisURL = configService.get<string>('REDIS_URL');
         return {
-          redis: redisURL || {
+          redis: {
             host: configService.getOrThrow('REDIS_HOST'),
             port: configService.getOrThrow('REDIS_PORT'),
+            password: configService.get('REDIS_PASSWORD'),
           },
           prefix: 'remotion',
         };
