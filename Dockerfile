@@ -1,5 +1,5 @@
 # Base image: Node 14.28.0 (https://www.remotion.dev/docs/lambda/feb-2023-incident#cause)
-FROM node:14.28.0-alpine
+FROM node:16.15.0-alpine
 
 RUN apt-get install chromium
 
