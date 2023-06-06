@@ -19,6 +19,10 @@ COPY . .
 # Build the app
 RUN pnpm server:build
 
+# Download ffmpeg and ffprobe
+RUN pnpm exec remotion install ffmpeg
+RUN pnpm exec remotion install ffprobe
+
 # Expose the port
 EXPOSE 3050
 
