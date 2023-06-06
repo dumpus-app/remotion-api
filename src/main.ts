@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { bundle } from '@remotion/bundler';
 import { webpackOverride } from '../video/webpack-override';
 import path from 'node:path';
@@ -11,7 +11,10 @@ export let bundleLocation: Awaited<ReturnType<typeof bundle>>;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  const configService: ConfigService = app.get(ConfigService);
+
+  const configService = app.get(ConfigService);
+  const logger = new Logger('Bootstrap');
+
   bundleLocation = await bundle(
     path.join(process.cwd(), './video/index.ts'),
     () => undefined,
@@ -19,8 +22,9 @@ async function bootstrap() {
       webpackOverride,
     },
   );
+
   const port = configService.get('PORT') || 3050;
   await app.listen(port);
-  console.log(`Started server on port ${port}`);
+  logger.log(`Started server on port ${port}`);
 }
 bootstrap();

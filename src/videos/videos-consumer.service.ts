@@ -4,7 +4,7 @@ import { CreateVideoDto } from './dto/create-video.dto';
 import { getCompositions, renderMedia } from '@remotion/renderer';
 import { getFilePath } from './utils';
 import { bundleLocation } from '../main';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import fsp from 'node:fs/promises';
 
@@ -17,6 +17,8 @@ export function jobParams(params: JobParams) {
 @Processor('videos')
 @Injectable()
 export class VideosConsumer {
+  private logger = new Logger(`VideosConsumer`);
+
   constructor(private schedulerRegistry: SchedulerRegistry) {}
 
   private duration = 60 * 1000 * 15; // 15min
@@ -24,6 +26,7 @@ export class VideosConsumer {
   @Process()
   async transcode(job: Job<JobParams>) {
     const { id, ...inputProps } = job.data;
+    this.logger.log(`Start job for id ${id}`);
     // The composition you want to render
     const compositionId = 'Video';
     // Extract all the compositions you have defined in your project
@@ -42,7 +45,7 @@ export class VideosConsumer {
     }
 
     const outputLocation = getFilePath(id);
-    console.log('Attempting to render:', outputLocation);
+    this.logger.log(`Start ${outputLocation} rendering`);
     await renderMedia({
       composition,
       serveUrl: bundleLocation,
@@ -50,7 +53,7 @@ export class VideosConsumer {
       outputLocation,
       inputProps,
     });
-    console.log('Render done!');
+    this.logger.log('Render done');
     return {};
   }
 
@@ -64,7 +67,7 @@ export class VideosConsumer {
       `delete-video-${id}`,
       setTimeout(async () => {
         await fsp.unlink(getFilePath(id));
-        console.log(`deleted video with id ${id}`);
+        this.logger.log(`Deleted video with id ${id}`);
       }, this.duration),
     );
   }

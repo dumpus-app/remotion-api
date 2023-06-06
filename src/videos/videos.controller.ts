@@ -7,14 +7,18 @@ import {
   HttpException,
   Res,
   Sse,
+  Logger,
+  Req,
 } from '@nestjs/common';
 import { VideosService } from './videos.service';
 import { CreateVideoDto } from './dto/create-video.dto';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
 
 @Controller('videos')
 export class VideosController {
+  private logger = new Logger(`VideosController`);
+
   constructor(private readonly videosService: VideosService) {}
 
   @Post()
@@ -44,7 +48,12 @@ export class VideosController {
   // Limit set to 5
   @Throttle(5, 5 * 60)
   @Sse('sse/:id')
-  sse(@Param('id') id: string) {
+  sse(@Req() req: Request, @Param('id') id: string) {
+    const { protocol, method, url } = req;
+    this.logger.log(
+      `[${new Date().toISOString()}] ${protocol}: ${method} ${url}`,
+    );
+
     return this.videosService.sse(id);
   }
 }

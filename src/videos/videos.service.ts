@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { createReadStream } from 'node:fs';
@@ -18,11 +18,14 @@ class MyEmitter extends EventEmitter {
 
 @Injectable()
 export class VideosService {
+  private logger = new Logger(`VideosService`);
+
   // @ts-expect-error ts(1239)
   constructor(@InjectQueue('videos') private videosQueue: Queue) {}
 
   async create(createVideoDto: CreateVideoDto) {
     const id = uuidv4();
+    this.logger.log(`Add ${id} to videosQueue`);
     this.videosQueue.add(jobParams({ id, ...createVideoDto }));
     return { id };
   }
